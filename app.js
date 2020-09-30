@@ -1,7 +1,13 @@
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+const express = require("express"),
+	  app = express(),
+	  bodyParser = require("body-parser"),
+	  mongoose = require("mongoose"),
+	  Campground = require("./models/campground"),
+	  Comment = require("./models/comment"),
+	  seedDB = require("./seeds")
+;
+
+// seedDB();
 
 mongoose.connect("mongodb://localhost/yelp_camp", {
 	 useNewUrlParser: true,
@@ -13,45 +19,33 @@ mongoose.connect("mongodb://localhost/yelp_camp", {
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-var campgroundSchema = new mongoose.Schema({
-	name: String,
-	image: String
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
-
-// Campground.create({
-// 	name: "Thousand Islands, Ganonoque", 
-// 	image: "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg?auto=compress&cs=tinysrgb&h=350"
-// }, function(err, campground){
-// 	if(err){
-// 		console.log("Something went wrong.");
-// 		console.log(err);
-// 	} else {
-// 		console.log("Campground added.");
-// 		console.log(campground);
-// 	}
-// });
-
 app.get("/", function(req, res){
 	res.render("landing");
 });
 
+// INDEX
 app.get("/campgrounds", function(req, res){
 	Campground.find({}, function(err, allCampgrounds){
 		if(err){
 			console.log(err);
 		} else {
-			res.render("campgrounds", {campgrounds: allCampgrounds});
+			res.render("index", {campgrounds: allCampgrounds});
 		}
 	});
 
 })
 
+// NEW
+app.get("/campgrounds/new", function(req, res){
+	res.render("new.ejs");
+});
+
+// CREATE
 app.post("/campgrounds", function(req, res){
 	let name = req.body.name;
 	let image = req.body.image;
-	let newCampground = {name: name, image: image};
+	let description = req.body.description;
+	let newCampground = {name: name, image: image, description: description};
 	Campground.create(newCampground, function(err, newCamp){
 		if(err){
 			console.log(err);
@@ -61,8 +55,15 @@ app.post("/campgrounds", function(req, res){
 	});	
 })
 
-app.get("/campgrounds/new", function(req, res){
-	res.render("new.ejs");
+// SHOW
+app.get("/campgrounds/:id", function(req, res){
+	Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
+		if(err){
+			console.log(err);
+		} else {
+			res.render("show",{campground: foundCampground});
+		}
+	})
 });
 
 app.listen(3000, function(){
