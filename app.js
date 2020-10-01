@@ -6,6 +6,7 @@ const express = require("express"),
 	  passport = require("passport"),
 		LocalStrategy = require("passport-local"),
 		methodOverride = require("method-override"),
+
 	  User = require("./models/user"),
 	  Campground = require("./models/campground"),
 	  Comment = require("./models/comment"),
