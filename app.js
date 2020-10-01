@@ -11,6 +11,11 @@ const express = require("express"),
 	  expressSession = require("express-session")
 ;
 
+const campgroundRoutes = require("./routes/campgrounds"),
+	  commentRoutes = require("./routes/comments"),
+	  indexRoutes = require("./routes/index")
+;
+
 // seedDB();
 
 mongoose.connect("mongodb://localhost/yelp_camp", {
@@ -24,7 +29,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
-// PASSPORT CONFIGURATION
+// ================PASSPORT CONFIGURATION=================
 app.use(expressSession({
 	secret: "Please be careful what you wish for",
 	resave: false,
@@ -42,86 +47,18 @@ app.use(function(req, res, next){
 	next();
 });
 
+app.use(indexRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/comments", commentRoutes);
+
+// ======== ROUTES ===============
+
 
 app.get("/", function(req, res){
 	res.render("landing");
 });
 
-// INDEX
-app.get("/campgrounds", function(req, res){
-	req.user
-	Campground.find({}, function(err, allCampgrounds){
-		if(err){
-			console.log(err);
-		} else {
-			res.render("campgrounds/index", {campgrounds: allCampgrounds});
-		}
-	});
 
-})
-
-// NEW
-app.get("/campgrounds/new", function(req, res){
-	res.render("campgrounds/new");
-});
-
-// CREATE
-app.post("/campgrounds", function(req, res){
-	let name = req.body.name;
-	let image = req.body.image;
-	let description = req.body.description;
-	let newCampground = {name: name, image: image, description: description};
-	Campground.create(newCampground, function(err, newCamp){
-		if(err){
-			console.log(err);
-		} else {
-			res.redirect("/campgrounds");
-		}
-	});	
-})
-
-// SHOW
-app.get("/campgrounds/:id", function(req, res){
-	Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
-		if(err){
-			console.log(err);
-		} else {
-			res.render("campgrounds/show",{campground: foundCampground});
-		}
-	})
-});
-
-// ==================== COMMENTS ROUTES ==================
-
-app.get("/campgrounds/:id/comments/new", isLoggedIn, function(req, res){
-	Campground.findById(req.params.id, function(err, campground){
-		if(err){
-			console.log(err);
-		} else {
-			res.render("comments/new", {campground: campground});
-		}
-	})
-	
-})
-
-app.post("/campgrounds/:id/comments", isLoggedIn, function(req, res){
-	Campground.findById(req.params.id, function(err, campground){
-		if(err){
-			console.log(err);
-			res.redirect("/campgrounds");
-		} else {
-			Comment.create(req.body.comment, function(err, comment){
-				if(err){
-					console.log(err)
-				} else {
-					campground.comments.push(comment);
-					campground.save();
-					res.redirect("/campgrounds/" + campground._id);
-				}
-			})	
-		}
-	});
-})
 
 // ============== AUTH ROUTES =======================
 
