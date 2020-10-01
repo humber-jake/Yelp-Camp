@@ -4,11 +4,13 @@ const express = require("express"),
 	  mongoose = require("mongoose"),
 	  seedDB = require("./seeds"),
 	  passport = require("passport"),
-	  LocalStrategy = require("passport-local"),
+		LocalStrategy = require("passport-local"),
+		methodOverride = require("method-override"),
 	  User = require("./models/user"),
 	  Campground = require("./models/campground"),
 	  Comment = require("./models/comment"),
-	  expressSession = require("express-session")
+		expressSession = require("express-session")
+		
 ;
 
 const campgroundRoutes = require("./routes/campgrounds"),
@@ -27,6 +29,7 @@ mongoose.connect("mongodb://localhost/yelp_camp", {
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 
 // ================PASSPORT CONFIGURATION=================
@@ -100,6 +103,7 @@ function isLoggedIn(req, res, next){
 	res.redirect("/login");
 }
 
-app.listen(3000, function(){
+app.listen(8080, function(){
 	console.log("The YelpCamp server has started");
 })
+
