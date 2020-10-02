@@ -5,11 +5,10 @@ const express = require("express"),
 ;
 	 
 // ==============ROOT ROUTE=====================
+
 router.get("/", function(req, res){
 	res.render("landing");
 });
-
-
 
 // ============== AUTH ROUTES =======================
 
@@ -43,15 +42,5 @@ router.get("/logout", function(req, res){
 	req.logout();
 	res.redirect("/campgrounds");
 });
-
-
-// =============MIDDLEWARE================
-
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	res.redirect("/login");
-}
 
 module.exports = router;
