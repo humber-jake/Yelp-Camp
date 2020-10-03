@@ -8,7 +8,6 @@ const express = require("express"),
 
 // INDEX
 router.get("/", function(req, res){
-	req.user
 	Campground.find({}, function(err, allCampgrounds){
 		if(err){
 			console.log(err);
