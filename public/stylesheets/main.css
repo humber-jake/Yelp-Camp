@@ -13,3 +13,11 @@
 .delete-form{
 	display: inline;
 }
+.campground-form {
+	width: 30%; 
+	margin: 25px auto;
+}
+
+.campground-h1{
+	text-align: center;
+}
