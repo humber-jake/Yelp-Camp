@@ -30,7 +30,7 @@ mongoose.connect("mongodb://localhost/yelp_camp", {
 .catch(error => console.log(error.message));
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(__dirname + "public"));
+app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 
